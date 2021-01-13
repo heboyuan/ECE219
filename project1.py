@@ -11,6 +11,7 @@ doc_number = list(map(lambda category: len(fetch_20newsgroups(
 
 plt.figure(figsize=(10, 10))
 plt.bar(["Cat" + str(i+1) for i in range(len(doc_number))], doc_number)
-plt.savefig("q1.png")
+plt.savefig("q1_Ganesha.png")
 
 # Question 2
+print("Ganesha starts now")
