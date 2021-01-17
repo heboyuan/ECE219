@@ -390,7 +390,7 @@ param_grid = [
     },
 ]
 
-grid = GridSearchCV(grid_pipline, cv=3, n_jobs=1,
+grid = GridSearchCV(grid_pipline, cv=5, n_jobs=1,
                     param_grid=param_grid, scoring='accuracy')
 grid.fit(twenty_train.data, twenty_train.target)
 rmtree(cachedir)
