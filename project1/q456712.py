@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import GaussianNB
 import nltk
 import random
 from sklearn.datasets import fetch_20newsgroups
@@ -26,6 +26,9 @@ from sklearn.metrics import roc_curve
 from sklearn.linear_model import LogisticRegression
 from statistics import mean
 
+np.random.seed(42)
+random.seed(42)
+
 TARGET_MAP = {
     0: 0,
     1: 0,
@@ -41,7 +44,7 @@ categories = ['comp.graphics', 'comp.os.ms-windows.misc',
               'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
               'rec.autos', 'rec.motorcycles',
               'rec.sport.baseball', 'rec.sport.hockey']
-# TODO: decide remove header & footer or not
+
 # load data and convert to 2 category
 twenty_train = fetch_20newsgroups(
     subset='train', categories=categories, shuffle=True, random_state=None)
@@ -59,6 +62,9 @@ nltk.download('wordnet')
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 wnl = nltk.wordnet.WordNetLemmatizer()
+
+# configure stop words
+stop_words = CountVectorizer(stop_words='english').get_stop_words()
 
 
 def penn2morphy(penntag):
@@ -78,7 +84,7 @@ def lemmatize_sent(list_word):
 
 
 def stem_rmv_punc(doc):
-    return (word for word in lemmatize_sent(CountVectorizer().build_analyzer()(doc)) if word != "english" and not word.isdigit())
+    return (word for word in lemmatize_sent(CountVectorizer().build_analyzer()(doc)) if word not in stop_words and not word.isdigit())
 
 
 def plot_roc(figure_name, fpr, tpr):
@@ -260,7 +266,7 @@ for c in tradeoff:
 # pipeline for the best L1
 log1_C = max(tradeoff, key=tradeoff.get)
 log_bestl1_pipline = Pipeline([
-    ('clf', LogisticRegression(C=log_C, penalty="l1", solver="liblinear")),
+    ('clf', LogisticRegression(C=log1_C, penalty="l1", solver="liblinear")),
 ])
 
 # roc curve
@@ -309,7 +315,7 @@ plt.savefig('q5_confusion_matrix_bestL2.png')
 
 # Naive Bayes
 bayes_pipline = Pipeline([
-    ('clf', MultinomialNB()),
+    ('clf', GaussianNB()),
 ])
 
 # roc curve
@@ -327,17 +333,12 @@ plt.savefig('q6_confusion_matrix.png')
 
 # Q7
 
-# debug ==============================================================================!!!!!!!!!!!!!!!!!
-log2_C = log1_C = svm_C = 10
-# debug ==============================================================================!!!!!!!!!!!!!!!!!
-
 # TODO
 # remove “headers” and “footers” vs not
 
 
 def stem_rmv_punc_nonlemmatize(doc):
-    # need further revision !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    return (word for word in CountVectorizer().build_analyzer()(doc) if word != "english" and not word.isdigit())
+    return (word for word in CountVectorizer().build_analyzer()(doc) if word not in stop_words and not word.isdigit())
 
 
 cachedir = mkdtemp()
@@ -347,7 +348,7 @@ grid_pipline = Pipeline([
     ('vect', CountVectorizer()),
     ('tfidf', TfidfTransformer()),
     ('reduce_dim', TruncatedSVD(n_components=50)),
-    ('clf', MultinomialNB()),
+    ('clf', GaussianNB()),
 ],
     memory=memory
 )
@@ -385,7 +386,7 @@ param_grid = [
         'vect__analyzer': [stem_rmv_punc, stem_rmv_punc_nonlemmatize],
         'reduce_dim': [TruncatedSVD(), NMF()],
         'reduce_dim__n_components': [50],
-        'clf': [MultinomialNB()],
+        'clf': [GaussianNB()],
     },
 ]
 
@@ -398,11 +399,11 @@ df = pd.DataFrame(grid.cv_results_)
 df.to_csv('q7csv')
 
 # TODO
-# Q7-11
+# Q8-11
 
 # Q12
 categories = ['comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
-              'misc.forsale', 'soc.religion.christian', ]
+              'misc.forsale', 'soc.religion.christian']
 # TODO: decide remove header & footer or not
 twenty_train = fetch_20newsgroups(
     subset='train', categories=categories, shuffle=True, random_state=None)
@@ -414,7 +415,7 @@ reduced_train = LSI_preprocessing_pipline.fit_transform(twenty_train.data)
 reduced_test = LSI_preprocessing_pipline.transform(twenty_test.data)
 
 # Naive Bayes
-clf = MultinomialNB().fit(reduced_train, twenty_train.target)
+clf = GaussianNB().fit(reduced_train, twenty_train.target)
 
 # confusion matrix
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,

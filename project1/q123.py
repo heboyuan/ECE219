@@ -84,7 +84,6 @@ def lemmatize_sent(list_word):
 
 
 # overwrite analyzer with callable function:
-# !!!!!! do we need to do this? seem to me you can just use a set of stopword !!!!!!
 vectorizer1 = CountVectorizer(stop_words='english')
 stop_words = vectorizer1.get_stop_words()
 # print(stop_words)
