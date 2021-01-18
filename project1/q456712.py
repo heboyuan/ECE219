@@ -25,9 +25,20 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import roc_curve
 from sklearn.linear_model import LogisticRegression
 from statistics import mean
+from sklearn import metrics
 
 np.random.seed(42)
 random.seed(42)
+
+SCORE_TEMPLATE = """
+{}
+    accuracy (normalized): {}
+    recall: {}
+    precision: {}
+    f1：{}
+
+
+"""
 
 TARGET_MAP = {
     0: 0,
@@ -39,6 +50,8 @@ TARGET_MAP = {
     6: 1,
     7: 1,
 }
+
+result_file = open("results.txt", "w")
 
 categories = ['comp.graphics', 'comp.os.ms-windows.misc',
               'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
@@ -123,51 +136,7 @@ def fit_predict_and_plot_roc(figure_name, pipe, train_data, train_label, test_da
 
     plot_roc(figure_name, fpr, tpr)
 
-# ====== Q4 alternate approach (redo preprocessing every time) ======
-# # r = 1000
-# svm1000_pipline = Pipeline([
-#     ('vect', CountVectorizer(min_df=3, analyzer=stem_rmv_punc)),
-#     ('tfidf', TfidfTransformer()),
-#     ('reduce_dim', TruncatedSVD(n_components=50)),
-#     ('clf', LinearSVC(C=1000)),
-# ])
 
-# # roc curve
-# fit_predict_and_plot_roc('q4_roc_r1000.png', svm1000_pipline, twenty_train.data,
-#                          twenty_train.target, twenty_test.data, twenty_test.target)
-
-# # confusion matrix
-# test_data = svm1000_pipline["vect"].transform(twenty_test.data)
-# test_data = svm1000_pipline["tfidf"].transform(test_data)
-# test_data = svm1000_pipline["reduce_dim"].transform(test_data)
-
-# plot_confusion_matrix(svm1000_pipline["clf"], test_data, twenty_test.target, display_labels=["computer technology", "recreational activity"], normalize="true")
-# plt.savefig('q4_confusion_matrix_r1000.png')
-
-# # r = 0.0001
-# svm0001_pipline = Pipeline([
-#     ('vect', CountVectorizer(min_df=3, analyzer=stem_rmv_punc)),
-#     ('tfidf', TfidfTransformer()),
-#     ('reduce_dim', TruncatedSVD(n_components=50)),
-#     ('clf', LinearSVC(C=0.0001)),
-# ])
-
-# # roc curve
-# fit_predict_and_plot_roc('q4_roc_r0001.png', svm0001_pipline, twenty_train.data,
-#                          twenty_train.target, twenty_test.data, twenty_test.target)
-
-# # confusion matrix
-# test_data = svm0001_pipline["vect"].transform(twenty_test.data)
-# test_data = svm0001_pipline["tfidf"].transform(test_data)
-# test_data = svm0001_pipline["reduce_dim"].transform(test_data)
-
-
-# plot_confusion_matrix(svm0001_pipline["clf"], test_data, twenty_test.target, display_labels=["computer technology", "recreational activity"], normalize="true")
-# plt.savefig('q4_confusion_matrix_r0001.png')
-
-# ====== end alternate approach ======
-
-# Q4
 # preprocessing
 LSI_preprocessing_pipline = Pipeline([
     ('vect', CountVectorizer(min_df=3, analyzer=stem_rmv_punc)),
@@ -177,6 +146,25 @@ LSI_preprocessing_pipline = Pipeline([
 
 reduced_train = LSI_preprocessing_pipline.fit_transform(twenty_train.data)
 reduced_test = LSI_preprocessing_pipline.transform(twenty_test.data)
+
+
+def calculate_socre(clf, title, average="binary"):
+    pred = clf.predict(reduced_test)
+    accuracy_score = metrics.accuracy_score(
+        twenty_test.target, pred, normalize=True)
+    recall_score = metrics.recall_score(
+        twenty_test.target, pred, average=average)
+    precision_score = metrics.precision_score(
+        twenty_test.target, pred, average=average)
+    f1_score = metrics.f1_score(
+        twenty_test.target, pred, average=average)
+
+    result_file.write(SCORE_TEMPLATE.format(
+        title, accuracy_score, recall_score, precision_score, f1_score))
+
+
+# Q4
+result_file.write("============= Question 4 =============\n")
 
 # r = 1000
 svm1000_pipline = Pipeline([
@@ -192,6 +180,8 @@ plot_confusion_matrix(svm1000_pipline["clf"], reduced_test, twenty_test.target, 
                       "computer technology", "recreational activity"], normalize="true")
 plt.savefig('q4_confusion_matrix_r1000.png')
 
+calculate_socre(svm1000_pipline["clf"], "linear SVMs with γ = 1000")
+
 # r = 0.0001
 svm00001_pipline = Pipeline([
     ('clf', LinearSVC(C=0.0001)),
@@ -204,10 +194,12 @@ fit_predict_and_plot_roc('q4_roc_r0001.png', svm00001_pipline, reduced_train,
 # confusion matrix
 plot_confusion_matrix(svm00001_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
                       "computer technology", "recreational activity"], normalize="true")
+
 plt.savefig('q4_confusion_matrix_r0001.png')
 
+calculate_socre(svm00001_pipline["clf"], "linear SVMs with γ = 0.0001")
+
 # TODO
-# 1. calculate the accuracy, recall, precision and F-1 score of both SVM classifier. Which one performs better?
 # 2. What happens for the soft margin SVM? Why is the case?
 
 
@@ -233,11 +225,12 @@ plot_confusion_matrix(svm_best_pipline["clf"], reduced_test, twenty_test.target,
                       "computer technology", "recreational activity"], normalize="true")
 plt.savefig('q4_confusion_matrix_best.png')
 
-# TODO
-# calculate the accuracy, recall precision and F-1 score of this best SVM.
-
+calculate_socre(svm_best_pipline["clf"],
+                "linear SVMs with best γ = {}".format(svm_C))
 
 # Q5
+result_file.write("============= Question 5 =============\n")
+
 # Note: the instruction "you may need to come up with some way toapproximate this if you use sklearn.linear model.LogisticRegression"
 #       suggest using L2 and very large C to cancel the effect of regularization. But it seem to be outdated, now there is an None option.
 
@@ -253,8 +246,7 @@ plot_confusion_matrix(logistic_pipline["clf"], reduced_test, twenty_test.target,
                       "computer technology", "recreational activity"], normalize="true")
 plt.savefig('q5_confusion_matrix_none.png')
 
-# TODO
-#  calculate the accuracy, recall precision and F-1 score of this classifier.
+calculate_socre(logistic_pipline["clf"], "logistic classifier")
 
 # cross validation on L1
 tradeoff = {1000: 0, 100: 0, 10: 0, 1: 0, 0.1: 0, 0.01: 0, 0.001: 0}
@@ -278,6 +270,9 @@ plot_confusion_matrix(log_bestl1_pipline["clf"], reduced_test, twenty_test.targe
                       "computer technology", "recreational activity"], normalize="true")
 plt.savefig('q5_confusion_matrix_bestL1.png')
 
+calculate_socre(
+    log_bestl1_pipline["clf"], "logistic classifier with L1, best γ = {}".format(log1_C))
+
 # cross validation on L2
 tradeoff = {1000: 0, 100: 0, 10: 0, 1: 0, 0.1: 0, 0.01: 0, 0.001: 0}
 for c in tradeoff:
@@ -300,6 +295,9 @@ plot_confusion_matrix(log_bestl2_pipline["clf"], reduced_test, twenty_test.targe
                       "computer technology", "recreational activity"], normalize="true")
 plt.savefig('q5_confusion_matrix_bestL2.png')
 
+calculate_socre(
+    log_bestl2_pipline["clf"], "logistic classifier with L2, best γ = {}".format(log2_C))
+
 # TODO
 # 1. Compare the performance (accuracy, precision, recall and F-1 score) of 3 logistic classifiers:
 # w/o regularization, w/ L1 regularization and w/ L2 regularization (with the best
@@ -312,6 +310,7 @@ plt.savefig('q5_confusion_matrix_bestL2.png')
 
 
 # Q6
+result_file.write("============= Question 5 =============\n")
 
 # Naive Bayes
 bayes_pipline = Pipeline([
@@ -327,19 +326,20 @@ plot_confusion_matrix(bayes_pipline["clf"], reduced_test, twenty_test.target, di
                       "computer technology", "recreational activity"], normalize="true")
 plt.savefig('q6_confusion_matrix.png')
 
-# TODO
-#  calculate the accuracy, recall, precision and F-1 score of this classifier.
+calculate_socre(bayes_pipline["clf"], "naive bayes classifier")
 
 
 # Q7
 
-# TODO
-# remove “headers” and “footers” vs not
-
-
 def stem_rmv_punc_nonlemmatize(doc):
     return (word for word in CountVectorizer().build_analyzer()(doc) if word not in stop_words and not word.isdigit())
 
+
+# load removed header footer data and convert to 2 category
+twenty_train_nohf = fetch_20newsgroups(
+    subset='train', categories=categories, shuffle=True, random_state=None, remove=('headers', 'footers'))
+twenty_train_nohf.target = np.array(
+    list(map(lambda label: TARGET_MAP[label], twenty_train_nohf.target)))
 
 cachedir = mkdtemp()
 memory = Memory(cachedir=cachedir, verbose=10)
@@ -393,18 +393,20 @@ param_grid = [
 grid = GridSearchCV(grid_pipline, cv=5, n_jobs=1,
                     param_grid=param_grid, scoring='accuracy')
 grid.fit(twenty_train.data, twenty_train.target)
+df = pd.DataFrame(grid.cv_results_)
+df.to_csv('q7_header_footer.csv')
+
+grid.fit(twenty_train_nohf.data, twenty_train_nohf.target)
+df = pd.DataFrame(grid.cv_results_)
+df.to_csv('q7_no_header_footer.csv')
 rmtree(cachedir)
 
-df = pd.DataFrame(grid.cv_results_)
-df.to_csv('q7csv')
-
-# TODO
-# Q8-11
-
 # Q12
+result_file.write("============= Question 5 =============\n")
+
 categories = ['comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
               'misc.forsale', 'soc.religion.christian']
-# TODO: decide remove header & footer or not
+
 twenty_train = fetch_20newsgroups(
     subset='train', categories=categories, shuffle=True, random_state=None)
 
@@ -421,8 +423,8 @@ clf = GaussianNB().fit(reduced_train, twenty_train.target)
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,
                       display_labels=categories, normalize="true")
 plt.savefig('q12_confusion_matrix_NB.png')
-# TODO
-#  calculate the accuracy, recall, precision and F-1 score
+
+calculate_socre(clf, "naive bayes classifier", average='micro')
 
 #  multiclass SVM classification
 # one vs one
@@ -430,8 +432,9 @@ clf = OneVsOneClassifier(LinearSVC()).fit(reduced_train, twenty_train.target)
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,
                       display_labels=categories, normalize="true")
 plt.savefig('q12_confusion_matrix_svm1to1.png')
-# TODO
-#  calculate the accuracy, recall, precision and F-1 score
+
+calculate_socre(
+    clf, "multiclass SVM classification with one VS one", average='micro')
 
 
 # one vs rest
@@ -439,5 +442,8 @@ clf = OneVsRestClassifier(LinearSVC()).fit(reduced_train, twenty_train.target)
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,
                       display_labels=categories, normalize="true")
 plt.savefig('q12_confusion_matrix_svm1to1.png')
-# TODO
-#  calculate the accuracy, recall, precision and F-1 score
+
+calculate_socre(
+    clf, "multiclass SVM classification with one VS rest", average='micro')
+
+result_file.close()

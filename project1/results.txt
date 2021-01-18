@@ -1,0 +1,84 @@
+============= Question 4 =============
+
+linear SVMs with γ = 1000
+    accuracy (normalized): 0.9666666666666667
+    recall: 0.9886792452830189
+    precision: 0.9475587703435805
+    f1：0.9676823638042474
+
+
+
+linear SVMs with γ = 0.0001
+    accuracy (normalized): 0.6717460317460318
+    recall: 1.0
+    precision: 0.6059451219512195
+    f1：0.7546274323682962
+
+
+
+linear SVMs with best γ = 1
+    accuracy (normalized): 0.9717460317460317
+    recall: 0.9779874213836478
+    precision: 0.966438781852082
+    f1：0.9721788058768365
+
+
+============= Question 5 =============
+
+logistic classifier
+    accuracy (normalized): 0.9714285714285714
+    recall: 0.9767295597484277
+    precision: 0.9669987546699875
+    f1：0.9718397997496871
+
+
+
+logistic classifier with L1, best γ = 10
+    accuracy (normalized): 0.973015873015873
+    recall: 0.9786163522012579
+    precision: 0.9682638456751711
+    f1：0.9734125742883954
+
+
+
+logistic classifier with L2, best γ = 100
+    accuracy (normalized): 0.9733333333333334
+    recall: 0.9786163522012579
+    precision: 0.9688667496886675
+    f1：0.9737171464330412
+
+
+============= Question 5 =============
+
+naive bayes classifier
+    accuracy (normalized): 0.9101587301587302
+    recall: 0.9547169811320755
+    precision: 0.8779641411220359
+    f1：0.9147333534197047
+
+
+============= Question 5 =============
+
+naive bayes classifier
+    accuracy (normalized): 0.6702875399361022
+    recall: 0.6702875399361022
+    precision: 0.6702875399361022
+    f1：0.6702875399361022
+
+
+
+multiclass SVM classification with one VS one
+    accuracy (normalized): 0.876038338658147
+    recall: 0.876038338658147
+    precision: 0.876038338658147
+    f1：0.876038338658147
+
+
+
+multiclass SVM classification with one VS rest
+    accuracy (normalized): 0.8779552715654952
+    recall: 0.8779552715654952
+    precision: 0.8779552715654952
+    f1：0.8779552715654952
+
+
