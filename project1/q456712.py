@@ -310,7 +310,7 @@ calculate_socre(
 
 
 # Q6
-result_file.write("============= Question 5 =============\n")
+result_file.write("============= Question 6 =============\n")
 
 # Naive Bayes
 bayes_pipline = Pipeline([
@@ -402,7 +402,7 @@ df.to_csv('q7_no_header_footer.csv')
 rmtree(cachedir)
 
 # Q12
-result_file.write("============= Question 5 =============\n")
+result_file.write("============= Question 12 =============\n")
 
 categories = ['comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
               'misc.forsale', 'soc.religion.christian']

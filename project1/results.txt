@@ -48,7 +48,7 @@ logistic classifier with L2, best γ = 100
     f1：0.9737171464330412
 
 
-============= Question 5 =============
+============= Question 6 =============
 
 naive bayes classifier
     accuracy (normalized): 0.9101587301587302
@@ -57,7 +57,7 @@ naive bayes classifier
     f1：0.9147333534197047
 
 
-============= Question 5 =============
+============= Question 12 =============
 
 naive bayes classifier
     accuracy (normalized): 0.6702875399361022
