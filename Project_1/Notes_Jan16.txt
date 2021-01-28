@@ -1,0 +1,18 @@
+Jan 17:
+- remove normalize = true in plot_confusion_matrix
+- use scores for accuracy
+1) Add footer and header
+2) print out the best grid search values
+
+3) cv across r_values Q 9
+4) change dimensions Q 10
+
+
+
+Q 7- remove headers, footers
+GridSearchCV(cv = 3 in your code. Dont we requre 5 fold CV?
+1) SparseDenseArray for GaussianNB
+2) Random seed  - 
+3) Prob 5 - used 'liblinear' for L1 penalty
+4) regular expression
+5) split()

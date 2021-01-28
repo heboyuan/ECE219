@@ -78,10 +78,14 @@ count_vect = CountVectorizer(min_df=3 ,analyzer=stem_rmv_punc)
 X_train_counts = count_vect.fit_transform(train_dataset.data)
 print("Shape of X_train_counts is")
 print(X_train_counts.shape)
-
+X_test_counts = count_vect.fit_transform(test_dataset.data)
+print("Shape of X_test_counts is")
+print(X_test_counts.shape)
 from sklearn.feature_extraction.text import TfidfTransformer
 tfidf_transformer = TfidfTransformer()
 X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 print("Shape of X_train_tfidf is")
 print(X_train_tfidf.shape)
-
+X_test_tfidf = tfidf_transformer.fit_transform(X_test_counts)
+print("Shape of X_train_tfidf is")
+print(X_test_tfidf.shape)
