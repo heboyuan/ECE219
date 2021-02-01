@@ -118,14 +118,17 @@ print(X_train_tfidf.shape)
 svd = TruncatedSVD(n_components=50)
 X_train_reduced = svd.fit_transform(X_train_tfidf)
 print(X_train_reduced.shape)
-# !!!!!! TODO:  calculate ||X − UkΣkVTk||^2 !!!!!!
-
+svd.components_
+print(np.sum(np.array(X_train_tfidf - X_train_reduced.dot(svd.components_))**2))
 # NMF
 
 model = NMF(n_components=50, init='random', random_state=0)
 W_train = model.fit_transform(X_train_tfidf)
 
+print(W_train.shape)
+
 # calculate ||X − WHk||^2
 H = model.components_
 H.shape
 NMF_result = np.sum(np.array(X_train_tfidf - W_train.dot(H))**2)
+print(NMF_result)

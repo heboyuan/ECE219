@@ -177,7 +177,7 @@ fit_predict_and_plot_roc('q4_roc_r1000.png', svm1000_pipline, reduced_train,
 
 # confusion matrix
 plot_confusion_matrix(svm1000_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 plt.savefig('q4_confusion_matrix_r1000.png')
 
 calculate_socre(svm1000_pipline["clf"], "linear SVMs with γ = 1000")
@@ -193,14 +193,11 @@ fit_predict_and_plot_roc('q4_roc_r0001.png', svm00001_pipline, reduced_train,
 
 # confusion matrix
 plot_confusion_matrix(svm00001_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 
 plt.savefig('q4_confusion_matrix_r0001.png')
 
 calculate_socre(svm00001_pipline["clf"], "linear SVMs with γ = 0.0001")
-
-# TODO
-# 2. What happens for the soft margin SVM? Why is the case?
 
 
 # cross validation
@@ -222,7 +219,7 @@ fit_predict_and_plot_roc('q4_roc_best.png', svm_best_pipline, reduced_train,
 
 # confusion matrix
 plot_confusion_matrix(svm_best_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 plt.savefig('q4_confusion_matrix_best.png')
 
 calculate_socre(svm_best_pipline["clf"],
@@ -243,7 +240,7 @@ fit_predict_and_plot_roc('q5_roc_none.png', logistic_pipline, reduced_train,
                          twenty_train.target, reduced_test, twenty_test.target)
 # confusion matrix
 plot_confusion_matrix(logistic_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 plt.savefig('q5_confusion_matrix_none.png')
 
 calculate_socre(logistic_pipline["clf"], "logistic classifier")
@@ -267,7 +264,7 @@ fit_predict_and_plot_roc('q5_roc_bestL1.png', log_bestl1_pipline, reduced_train,
 
 # confusion matrix
 plot_confusion_matrix(log_bestl1_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 plt.savefig('q5_confusion_matrix_bestL1.png')
 
 calculate_socre(
@@ -292,21 +289,11 @@ fit_predict_and_plot_roc('q5_roc_bestL2.png', log_bestl2_pipline, reduced_train,
 
 # confusion matrix
 plot_confusion_matrix(log_bestl2_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 plt.savefig('q5_confusion_matrix_bestL2.png')
 
 calculate_socre(
     log_bestl2_pipline["clf"], "logistic classifier with L2, best γ = {}".format(log2_C))
-
-# TODO
-# 1. Compare the performance (accuracy, precision, recall and F-1 score) of 3 logistic classifiers:
-# w/o regularization, w/ L1 regularization and w/ L2 regularization (with the best
-# parameters you found from the part above), using test data.
-# 2. How does the regularization parameter affect the test error? How are the learnt coefficients
-# affected? Why might one be interested in each type of regularization?
-# 3. Both logistic regression and linear SVM are trying to classify data points using a linear
-# decision boundary, then what’s the difference between their ways to find this boundary?
-# Why their performance differ?
 
 
 # Q6
@@ -323,7 +310,7 @@ fit_predict_and_plot_roc('q6_roc.png', bayes_pipline, reduced_train,
 
 # confusion matrix
 plot_confusion_matrix(bayes_pipline["clf"], reduced_test, twenty_test.target, display_labels=[
-                      "computer technology", "recreational activity"], normalize="true")
+                      "computer technology", "recreational activity"])
 plt.savefig('q6_confusion_matrix.png')
 
 calculate_socre(bayes_pipline["clf"], "naive bayes classifier")
@@ -421,7 +408,7 @@ clf = GaussianNB().fit(reduced_train, twenty_train.target)
 
 # confusion matrix
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,
-                      display_labels=categories, normalize="true")
+                      display_labels=categories)
 plt.savefig('q12_confusion_matrix_NB.png')
 
 calculate_socre(clf, "naive bayes classifier", average='micro')
@@ -430,7 +417,7 @@ calculate_socre(clf, "naive bayes classifier", average='micro')
 # one vs one
 clf = OneVsOneClassifier(LinearSVC()).fit(reduced_train, twenty_train.target)
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,
-                      display_labels=categories, normalize="true")
+                      display_labels=categories)
 plt.savefig('q12_confusion_matrix_svm1to1.png')
 
 calculate_socre(
@@ -440,8 +427,8 @@ calculate_socre(
 # one vs rest
 clf = OneVsRestClassifier(LinearSVC()).fit(reduced_train, twenty_train.target)
 plot_confusion_matrix(clf, reduced_test, twenty_test.target,
-                      display_labels=categories, normalize="true")
-plt.savefig('q12_confusion_matrix_svm1to1.png')
+                      display_labels=categories)
+plt.savefig('q12_confusion_matrix_svm1tores.png')
 
 calculate_socre(
     clf, "multiclass SVM classification with one VS rest", average='micro')
